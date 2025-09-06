@@ -1,0 +1,99 @@
+﻿@model List<Product>
+@using System.Globalization
+@{
+    Layout = "_Layout";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Products</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-md py-4">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <h1 class="text-3xl font-bold text-gray-900">Shop Products</h1>
+            <div class="flex items-center space-x-4">
+
+                <!-- زرار البحث -->
+                <form asp-action="ShowAllProducts" method="get" class="flex items-center space-x-2">
+                    <input type="text" name="searchQuery" placeholder="Search products..."
+                           value="@Context.Request.Query["searchQuery"]"
+                           class="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200">
+                        <i class="fas fa-search mr-1"></i> Search
+                    </button>
+                </form>
+
+                <!-- زرار Cart -->
+                <a asp-action="ShowCart" asp-controller="Cart"
+                   class="relative bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition flex items-center">
+                    <i class="fas fa-shopping-cart mr-2"></i> Cart
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        @if (Model == null || !Model.Any())
+        {
+            <div class="text-center py-12">
+                <p class="text-gray-600 text-lg">No products available.</p>
+                <a asp-controller="home" asp-action="index" class="mt-4 inline-block text-blue-600 hover:underline font-medium">Back to home</a>
+            </div>
+        }
+        else
+        {
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                @foreach (var product in Model)
+                {
+                    <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                        <img src="@(product.ImagePath ?? "https://via.placeholder.com/150")"
+                             alt="@(product.Name ?? "Product Image")"
+                             class="w-full h-48 object-cover rounded-t-xl">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-900 truncate">@(product.Name ?? "Unnamed Product")</h3>
+                            <p class="text-gray-700 mt-2">
+                                Price: <span class="font-semibold">
+                                    @(product.Price.ToString("C2", new CultureInfo("en-US")))
+                                </span>
+                            </p>
+                            <p class="text-gray-700 mt-1">
+                                Category: @(product.Category?.Name ?? "No Category")
+                            </p>
+                            <p class="text-gray-700 mt-1">
+                                Seller: <span class="font-medium text-blue-600">
+                                    @(product.User?.UserName ?? "Unknown Seller")
+                                </span>
+                            </p>
+                            <p class="mt-1">
+                                <span class="inline-block px-2 py-1 text-sm font-medium rounded-full @(product.StockQuantity > 0 ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800")">
+                                    @(product.StockQuantity > 0 ? $"In Stock: {product.StockQuantity}" : "Out of Stock")
+                                </span>
+                            </p>
+
+                            <!-- زرار Add to Cart -->
+                            <form asp-action="AddToCart" asp-controller="Cart" method="post" class="mt-4">
+                                <input type="hidden" name="ProductId" value="@product.Id" />
+                                <button type="submit"
+                                        class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-200 flex items-center justify-center @(product.StockQuantity == 0 ? "opacity-50 cursor-not-allowed" : "")"
+                                        @(product.StockQuantity == 0 ? "disabled" : "")>
+                                    <i class="fas fa-cart-plus mr-2"></i>
+                                    @(product.StockQuantity == 0 ? "Out of Stock" : "Add to Cart")
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </main>
+
+</body>
+</html>

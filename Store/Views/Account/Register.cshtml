@@ -1,0 +1,82 @@
+﻿@model Store.ViewModel.Account.RegisterViewModel
+@{
+    ViewData["Title"] = "Register";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+        <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Create an Account</h2>
+
+
+        <form asp-action="SaveRegister" method="post">
+            <div asp-validation-summary="All" class="text-red-500 text-sm mb-4"></div>
+
+            <!-- Name -->
+            <div class="mb-4">
+                <label asp-for="Name" class="block text-gray-700 font-medium mb-2"></label>
+                <input asp-for="Name" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                <span asp-validation-for="Name" class="text-red-500 text-sm"></span>
+            </div>
+
+            <!-- Password -->
+            <div class="mb-4">
+                <label asp-for="Password" class="block text-gray-700 font-medium mb-2"></label>
+                <input asp-for="Password" type="password" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                <span asp-validation-for="Password" class="text-red-500 text-sm"></span>
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="mb-4">
+                <label asp-for="ConfirmPassword" class="block text-gray-700 font-medium mb-2"></label>
+                <input asp-for="ConfirmPassword" type="password" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                <span asp-validation-for="ConfirmPassword" class="text-red-500 text-sm"></span>
+            </div>
+
+            <!-- Role Dropdown -->
+            <div class="mb-4" id="Rol">
+                @Html.DropDownListFor(m => m.Role, ViewData["Role"] as List<SelectListItem>, "Select Role", new { @class = "w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"  })
+                <span asp-validation-for="Role" class="text-red-500 text-sm"></span>
+            </div>
+
+            <!-- Category Dropdown -->
+            <div class="mb-6" id="Cat" style="display:none">
+                @Html.DropDownListFor(m => m.CategoryId, ViewData["Category"] as List<SelectListItem>, "Select Category", new { @class = "w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" })
+                <span asp-validation-for="CategoryId" class="text-red-500 text-sm"></span>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition duration-200">
+                Register
+            </button>
+        </form>
+        <div class="mt-4 text-center">
+            <p class="text-gray-600">Already Registerd?, Then <a asp-action="Login" class="text-blue-500 hover:underline font-medium">Login</a></p>
+        </div>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate-unobtrusive/3.2.13/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>
+<script>
+    let Cat = document.getElementById("Cat");
+    let Rol = document.getElementById("Rol").querySelector("select");
+
+    Rol.addEventListener("change",function(){
+        if(Rol.value=="Company")
+        Cat.style.display="block";
+        else
+        Cat.style.display="none";
+    })
+</script>
