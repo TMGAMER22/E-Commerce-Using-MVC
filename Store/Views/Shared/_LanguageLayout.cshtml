@@ -1,0 +1,58 @@
+﻿@using Microsoft.Extensions.Localization
+@using Store.Language
+@inject IStringLocalizer<SharedResource> SharedLocalizer
+
+<!DOCTYPE html>
+<html lang="@System.Threading.Thread.CurrentThread.CurrentCulture.Name">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+    <!-- Navbar بسيط -->
+    <nav class="bg-white shadow p-4 flex justify-between items-center">
+        <!-- Dropdown لغات -->
+        <div class="relative">
+            <button id="lang-btn" class="flex items-center px-3 py-1 border rounded bg-white">
+                @{
+                    var cur = System.Threading.Thread.CurrentThread.CurrentCulture.Name;
+                }
+                @if (cur == "ar-EG")
+                {
+                    <span class="mr-2">العربية</span>
+                }
+                else
+                {
+
+                    <span class="mr-2">English</span>
+                }
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+            </button>
+
+            <div id="lang-menu" class="absolute right-0 mt-2 bg-white border rounded shadow hidden">
+                <a href="@Url.Action("SetLanguage", "Home", new { culture = "en-US", returnUrl = Context.Request.Path + Context.Request.QueryString })"
+                   class="block px-4 py-2 hover:bg-gray-100">English</a>
+                <a href="@Url.Action("SetLanguage", "Home", new { culture = "ar-EG", returnUrl = Context.Request.Path + Context.Request.QueryString })"
+                   class="block px-4 py-2 hover:bg-gray-100">العربية</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main content في النص -->
+    <main class="flex-grow flex justify-center items-start p-4">
+        <div class="w-full max-w-md">
+            @RenderBody()
+        </div>
+    </main>
+
+    <script>
+        const btn = document.getElementById("lang-btn");
+        const menu = document.getElementById("lang-menu");
+        btn.addEventListener("click",()=>menu.classList.toggle("hidden"));
+        document.addEventListener("click",e=>{if(!btn.contains(e.target)&&!menu.contains(e.target)) menu.classList.add("hidden")});
+    </script>
+</body>
+</html>

@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="ViewModel\Account\RoleViewModel.cs" />
+    <Compile Remove="ViewModel\Account\RoleViewModel.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,8 +21,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ViewModel\Product\" />
     <Folder Include="wwwroot\Images\Products\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="ViewModel\Account\RoleViewModel.cs" />
   </ItemGroup>
 
 </Project>

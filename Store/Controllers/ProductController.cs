@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using Store.Models;
@@ -18,6 +19,7 @@ namespace Store.Controllers
             this.productRepository = productRepository;
             this.userManager = userManager;
         }
+
         public IActionResult AddProduct()
         {
             return View();
@@ -54,10 +56,11 @@ namespace Store.Controllers
                 };
                 productRepository.Add(product);
                 productRepository.Save();
-                return RedirectToAction("Index","Home");
+                return RedirectToAction("ShowUserProducts");
             }
             return View("AddProduct",  ProductFromRequest);
         }
+
         public async Task<IActionResult> ShowAllProducts(string searchQuery)
         {
             var products = await productRepository.GetAllWithCompany();
@@ -69,12 +72,14 @@ namespace Store.Controllers
             }
             return View("ShowAllProducts", products); 
         }
+
         public async Task<IActionResult> ShowUserProducts()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var products = await productRepository.GetByUserId(userId);
             return View("ShowUserProducts", products);
         }
+
 
         public async Task<IActionResult > EditProduct(Guid id)
         {
@@ -86,6 +91,7 @@ namespace Store.Controllers
             }
             return View(product);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SaveEdit(Product productFromRequest)
@@ -113,6 +119,7 @@ namespace Store.Controllers
 
             return RedirectToAction("ShowUserProducts");
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteProduct(Guid id)

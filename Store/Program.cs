@@ -1,9 +1,14 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
+using Store.Language;
 using Store.Models;
 using Store.Repositories.Carts;
 using Store.Repositories.Categories;
+using Store.Repositories.Orders;
 using Store.Repositories.Products;
+using System.Globalization;
 
 namespace Store
 {
@@ -14,7 +19,14 @@ namespace Store
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddControllersWithViews()
+                .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
+                .AddDataAnnotationsLocalization(options =>
+                {
+                    options.DataAnnotationLocalizerProvider = (type, factory) =>
+                        factory.Create(typeof(SharedResource));
+                });
+
 
             builder.Services.AddDbContext<MyContext>(options =>
             {
@@ -30,9 +42,12 @@ namespace Store
                 options.Password.RequiredUniqueChars = 1;
 
             }).AddEntityFrameworkStores<MyContext>();
+
             builder.Services.AddScoped<ICategoryRepository,CategoryRepository>();
             builder.Services.AddScoped<IProductRepository,ProductRepository>();
             builder.Services.AddScoped<ICartRepository,CartRepository>();
+            builder.Services.AddScoped<IOrderRepository,OrderRepository>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -40,6 +55,24 @@ namespace Store
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
+            var supportedCultures = new[] {
+              new CultureInfo("ar-EG"),
+              new CultureInfo("en-US"),
+            };
+
+            app.UseRequestLocalization(new RequestLocalizationOptions
+            {
+                DefaultRequestCulture = new RequestCulture("en-US"),
+                SupportedCultures = supportedCultures,
+                SupportedUICultures = supportedCultures,
+                RequestCultureProviders = new List<IRequestCultureProvider>
+                 {
+                    new QueryStringRequestCultureProvider(),
+                    new CookieRequestCultureProvider()
+                  }
+            });
+
             app.UseStaticFiles();
 
             app.UseRouting();

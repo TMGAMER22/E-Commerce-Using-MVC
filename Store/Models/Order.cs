@@ -9,5 +9,7 @@
         public decimal TotalPrice { get; set; }
         public string Status { get; set; } = "Pending";
         public List<OrderItems> Items { get; set; }
+        public string? Notes { get; set; }
+
     }
 }

@@ -1,7 +1,6 @@
 ﻿@model Store.Models.Cart
 @{
     ViewData["Title"] = "ShowCart";
-    Layout = null;
 }
 @using System.Globalization
 
@@ -95,7 +94,7 @@
                             </button>
                         </form>
                         <!-- زرار Checkout -->
-                        <form asp-action="Checkout" method="post">
+                        <form asp-action="Checkout" asp-controller="Order" method="post">
                             @Html.AntiForgeryToken()
                             <button type="submit" class="bg-indigo-600 text-white py-2 px-6 rounded-lg hover:bg-indigo-700 transition duration-300">
                                 <i class="fas fa-check-circle mr-2"></i> Proceed to Checkout

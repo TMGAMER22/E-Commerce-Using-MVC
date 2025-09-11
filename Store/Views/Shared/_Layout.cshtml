@@ -1,63 +1,118 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@using Microsoft.Extensions.Localization
+@using Store.Language
+@inject IStringLocalizer<SharedResource> SharedLocalizer
+
+<!DOCTYPE html>
+<html lang="@System.Threading.Thread.CurrentThread.CurrentCulture.Name">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Store</title>
+
+    <!-- Bootstrap -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Store.styles.css" asp-append-version="true" />
 </head>
-<body>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+    <!-- Navbar -->
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <p>@User.Identity.Name</p>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        @if (User.Identity.IsAuthenticated)
-                        {                               
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Details">Details</a>
-                        </li>                                
-                            if(User.IsInRole("Company")){
-                        <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="ShowUserProducts">Products</a>
-                        </li>                                
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="AddProduct">AddProduct</a>
-                        </li>
-                            }else if (User.IsInRole("Customer"))
-                            {
-                              <li class="nav-item">
-                                  <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="ShowAllProducts">Products</a>
-                              </li>                                 
-                            }
+        <nav class="bg-white shadow-sm border-b">
+            <div class="container mx-auto px-4 flex justify-between items-center h-16">
+                <!-- Logo -->
+                <a asp-controller="Home" asp-action="Index"
+                   class="text-xl font-bold text-blue-600 flex items-center gap-2">
+                    🛒 Store
+                </a>
+
+                <!-- Links -->
+                <div class="flex items-center space-x-6">
+                    <a asp-controller="Home" asp-action="Index" class="text-gray-700 hover:text-blue-600 transition">
+                        @SharedLocalizer["Home"]
+                    </a>
+
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <a asp-controller="Account" asp-action="Details" class="text-gray-700 hover:text-blue-600 transition">
+                            @SharedLocalizer["Details"]
+                        </a>
+
+                        @if (User.IsInRole("Company"))
+                        {
+                            <a asp-controller="Product" asp-action="ShowUserProducts" class="text-gray-700 hover:text-blue-600 transition">
+                                @SharedLocalizer["Products"]
+                            </a>
+                            <a asp-controller="Product" asp-action="AddProduct" class="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 transition">
+                                + @SharedLocalizer["AddProduct"]
+                            </a>
                         }
-                    </ul>
+                        else if (User.IsInRole("Customer"))
+                        {
+                            <a asp-controller="Product" asp-action="ShowAllProducts" class="text-gray-700 hover:text-blue-600 transition">
+                                @SharedLocalizer["Products"]
+                            </a>
+                        }
+                    }
+
+                    <!-- Language Dropdown -->
+                    <div class="relative">
+                        <button id="lang-btn" class="flex items-center px-3 py-1 border rounded bg-white">
+                            @{
+                                var cur = System.Threading.Thread.CurrentThread.CurrentCulture.Name;
+                            }
+                            @if (cur == "ar-EG")
+                            {
+                                <span class="me-2">العربية</span>
+                            }
+                            else
+                            {
+                                <span class="me-2">English</span>
+                            }
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+
+                        <div id="lang-menu" class="absolute right-0 mt-2 bg-white border rounded shadow hidden">
+                            <a href="@Url.Action("SetLanguage", "Home", new { culture = "en-US", returnUrl = Context.Request.Path + Context.Request.QueryString })"
+                               class="block px-4 py-2 hover:bg-gray-100">English</a>
+                            <a href="@Url.Action("SetLanguage", "Home", new { culture = "ar-EG", returnUrl = Context.Request.Path + Context.Request.QueryString })"
+                               class="block px-4 py-2 hover:bg-gray-100">العربية</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top footer text-muted">
 
+    <!-- Main Content -->
+    <main class="flex-grow container py-4">
+        @RenderBody()
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t shadow text-center py-3 text-gray-600 text-sm">
+        &copy; @DateTime.Now.Year - Store
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    <!-- Scripts -->
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        const btn = document.getElementById("lang-btn");
+        const menu = document.getElementById("lang-menu");
+        btn.addEventListener("click", () => menu.classList.toggle("hidden"));
+        document.addEventListener("click", e => {
+            if (!btn.contains(e.target) && !menu.contains(e.target))
+                menu.classList.add("hidden")
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

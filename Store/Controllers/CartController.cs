@@ -4,6 +4,7 @@ using Store.Models;
 using Store.Repositories.Products;
 using Store.Repositories.Carts;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Store.Controllers
 {
@@ -46,15 +47,12 @@ namespace Store.Controllers
 
             return RedirectToAction("ShowAllProducts", "Product");
         }
-
-
         public async Task<IActionResult> ShowCart()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var cart = await cartRepository.GetCartByUserId(userId);
             return View(cart);
         }
-
         [HttpPost]
         public async Task<IActionResult> ClearCart()
         {
@@ -77,7 +75,6 @@ namespace Store.Controllers
             var cart = await cartRepository.GetCartByUserId(userId);
             return View("ShowCart", cart);
         }
-
         [HttpPost]
         public async Task<IActionResult> DecreaseItem(Guid CartItemId)
         {

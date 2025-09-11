@@ -32,10 +32,10 @@ namespace Store.Controllers
         private void PrepareRegisterViewData()
         {
             ViewData["Role"] = new List<SelectListItem>
-    {
-        new SelectListItem{Value="Customer",Text="Customer"},
-        new SelectListItem{Value="Company",Text="Company"}
-    };
+            {
+                new SelectListItem{Value="Customer",Text="Customer"},
+                new SelectListItem{Value="Company",Text="Company"}
+            };
 
             var categories = categoryRepository.GetAll();
             ViewData["Category"] = categories.Select(c => new SelectListItem
@@ -131,8 +131,6 @@ namespace Store.Controllers
             await signInManager.SignOutAsync();
             return RedirectToAction("Login", "Account");
         }
-
-
         public async Task<IActionResult> Details()
         {
             var user = await userManager.GetUserAsync(User); 
