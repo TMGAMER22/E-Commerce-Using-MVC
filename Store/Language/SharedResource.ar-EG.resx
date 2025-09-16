@@ -175,7 +175,7 @@
     <value>العودة للتفاصيل</value>
   </data>
   <data name="BackToHome" xml:space="preserve">
-    <value>العودة للرئيسية</value>
+    <value>العودة للصفحة الرئيسية</value>
   </data>
   <data name="SelectRole" xml:space="preserve">
     <value>اختر الدور</value>
@@ -184,7 +184,7 @@
     <value>اختر الفئة</value>
   </data>
   <data name="Home" xml:space="preserve">
-    <value>الرئيسية</value>
+    <value>الصفحة الرئيسية</value>
   </data>
   <data name="Products" xml:space="preserve">
     <value>المنتجات</value>
@@ -431,5 +431,14 @@
   </data>
   <data name="GoToOrder" xml:space="preserve">
     <value>الذهاب لصفحة الطلب</value>
+  </data>
+  <data name="Welcome" xml:space="preserve">
+    <value>مرحبا بك في متجرنا</value>
+  </data>
+  <data name="StartShopping" xml:space="preserve">
+    <value>ابدأ التسوق</value>
+  </data>
+  <data name="SeekForProducts" xml:space="preserve">
+    <value>اكتشف افضل المنتجات وصدق اننا لسنا مخترقين</value>
   </data>
 </root>

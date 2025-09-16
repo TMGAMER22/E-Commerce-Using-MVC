@@ -13,11 +13,11 @@
 
     <!-- المحتوى -->
     <div class="position-relative p-5 rounded bg-dark bg-opacity-50 shadow-lg">
-        <h1 class="display-4 fw-bold mb-3">أهلا بيك في المتجر</h1>
-        <p class="lead mb-4">اكتشف أفضل المنتجات بأفضل الأسعار</p>
+        <h1 class="display-4 fw-bold mb-3">@SharedLocalizer["Welcome"]</h1>
+        <p class="lead mb-4">@SharedLocalizer["SeekForProducts"]</p>
         <a asp-controller="Product" asp-action="ShowAllProducts"
            class="btn btn-success btn-lg px-5">
-            ابدأ التسوق
+            @SharedLocalizer["StartShopping"]
         </a>
     </div>
 </div>

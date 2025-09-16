@@ -432,4 +432,13 @@
   <data name="GoToOrder" xml:space="preserve">
     <value>Reach To Order</value>
   </data>
+  <data name="Welcome" xml:space="preserve">
+    <value>Welcome To VStore :)</value>
+  </data>
+  <data name="StartShopping" xml:space="preserve">
+    <value>Start Shopping</value>
+  </data>
+  <data name="SeekForProducts" xml:space="preserve">
+    <value>Explore Best Products And Beleive We Are Not Hackers </value>
+  </data>
 </root>
