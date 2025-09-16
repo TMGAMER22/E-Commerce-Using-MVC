@@ -1,96 +1,77 @@
 ﻿@model OrderViewModel
 @{
-    ViewData["Title"] = "Checkout";
+    var isArabic = System.Threading.Thread.CurrentThread.CurrentUICulture.Name.StartsWith("ar");
+    ViewData["Title"] = @SharedLocalizer["Checkout"];
+    Layout = "_Layout";
 }
 @using System.Globalization
 @using Store.ViewModel.Order
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Order</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-        }
+<div class="bg-gradient-to-br from-gray-100 to-blue-100 min-h-screen py-10"
+     dir="@(isArabic ? "rtl" : "ltr")">
 
-        .order-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-            .order-card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-            }
-
-        .btn {
-            transition: all 0.3s ease;
-        }
-
-            .btn:hover {
-                transform: scale(1.05);
-            }
-    </style>
-</head>
-<body class="bg-gradient-to-br from-gray-100 to-blue-100 min-h-screen py-10">
     <div class="container mx-auto px-4">
         <div class="order-card bg-white rounded-3xl shadow-xl max-w-4xl mx-auto">
             <div class="card-header bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 rounded-t-3xl">
                 <h3 class="text-2xl font-bold mb-0">
-                    <i class="fas fa-box-open mr-2"></i> Order Details
+                    <i class="fas fa-box-open mr-2"></i> @SharedLocalizer["OrderDetails"]
                 </h3>
             </div>
+
             <div class="card-body p-8">
                 @if (Model == null || Model.Items == null || !Model.Items.Any())
                 {
-                    <div class="bg-yellow-50 border-l-4 border-yellow-500 p-6 rounded-lg text-center">
+                    <div class="bg-yellow-50 border-4 border-yellow-500 p-6 rounded-lg text-center">
                         <i class="fas fa-exclamation-circle text-yellow-500 text-2xl mb-2"></i>
-                        <p class="text-gray-700 text-lg font-medium">No order found or the order is empty.</p>
+                        <p class="text-gray-700 text-lg font-medium">@SharedLocalizer["NoOrderFound"]</p>
                     </div>
                 }
                 else
                 {
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div>
-                            <p class="text-gray-700"><strong>Created At:</strong> @Model.CreatedAt.ToString("g")</p>
+                            <p class="text-gray-700">
+                                <strong>@SharedLocalizer["CreatedAt"]:</strong> @Model.CreatedAt.ToString("g")
+                            </p>
                         </div>
                         <div>
                             <p class="text-gray-700">
-                                <strong>Status:</strong>
+                                <strong>@SharedLocalizer["Status"]:</strong>
                                 <span class="inline-block px-3 py-1 text-sm font-medium rounded-full
-                                            @(Model.Status == "Pending" ? "bg-yellow-100 text-yellow-800" :
-                                                                                                                  Model.Status == "Shipped" ? "bg-blue-100 text-blue-800" :
-                                                                                                                  Model.Status == "Delivered" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800")">
+                                                @(Model.Status == "Pending" ? "bg-yellow-100 text-yellow-800" :
+                                                                                    Model.Status == "Shipped" ? "bg-blue-100 text-blue-800" :
+                                                                                    Model.Status == "Delivered" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800")">
                                 <i class="fas @(Model.Status == "Pending" ? "fa-hourglass-half" :
-                                                                                                                        Model.Status == "Shipped" ? "fa-truck" :
-                                                                                                                        Model.Status == "Delivered" ? "fa-check-circle" : "fa-info-circle") mr-1"></i>
-                                @Model.Status
+                                                                                       Model.Status == "Shipped" ? "fa-truck" :
+                                                                                       Model.Status == "Delivered" ? "fa-check-circle" : "fa-info-circle") mr-1"></i>
+                                @SharedLocalizer[Model.Status]
                             </span>
                         </p>
-                        <p class="text-gray-700"><strong>Total Price:</strong> @Model.TotalPrice.ToString("C2", new CultureInfo("en-US"))</p>
+                        <p class="text-gray-700">
+                            <strong>@SharedLocalizer["TotalPrice"]:</strong>
+                            @Model.TotalPrice.ToString("C2", new CultureInfo(isArabic ? "ar-EG" : "en-US"))
+                        </p>
                     </div>
                 </div>
 
                 @if (!string.IsNullOrEmpty(Model.Notes))
                     {
-                        <div class="bg-gray-50 border-l-4 border-indigo-500 p-4 rounded-lg mb-6">
-                            <p class="text-gray-700"><strong>Customer Notes:</strong> @Model.Notes</p>
+                        <div class="bg-gray-50 border-4 border-indigo-500 p-4 rounded-lg mb-6">
+                            <p class="text-gray-700">
+                                <strong>@SharedLocalizer["CustomerNotes"]:</strong> @Model.Notes
+                            </p>
                         </div>
                     }
 
-                    <h4 class="text-xl font-semibold text-gray-800 mt-6 mb-4">Order Items</h4>
+                    <h4 class="text-xl font-semibold text-gray-800 mt-6 mb-4">@SharedLocalizer["OrderItems"]</h4>
                     <div class="overflow-x-auto">
                         <table class="w-full table-auto border-collapse">
                             <thead class="bg-gray-200 text-gray-700">
                                 <tr>
-                                    <th class="px-4 py-3 text-left">Product</th>
-                                    <th class="px-4 py-3 text-left">Quantity</th>
-                                    <th class="px-4 py-3 text-left">Unit Price</th>
-                                    <th class="px-4 py-3 text-left">Subtotal</th>
+                                    <th class="px-4 py-3">@SharedLocalizer["Product"]</th>
+                                    <th class="px-4 py-3">@SharedLocalizer["Quantity"]</th>
+                                    <th class="px-4 py-3">@SharedLocalizer["UnitPrice"]</th>
+                                    <th class="px-4 py-3">@SharedLocalizer["Subtotal"]</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -99,51 +80,74 @@
                                     <tr class="border-b border-gray-200 hover:bg-gray-50">
                                         <td class="px-4 py-3">@item.ProductName</td>
                                         <td class="px-4 py-3">@item.Quantity</td>
-                                        <td class="px-4 py-3">@item.UnitPrice.ToString("C2", new CultureInfo("en-US"))</td>
-                                        <td class="px-4 py-3">@((item.Quantity * item.UnitPrice).ToString("C2", new CultureInfo("en-US")))</td>
+                                        <td class="px-4 py-3">@item.UnitPrice.ToString("C2", new CultureInfo(isArabic ? "ar-EG" : "en-US"))</td>
+                                        <td class="px-4 py-3">@((item.Quantity * item.UnitPrice).ToString("C2", new CultureInfo(isArabic ? "ar-EG" : "en-US")))</td>
                                     </tr>
                                 }
                             </tbody>
                             <tfoot>
                                 <tr class="bg-gray-100 font-semibold text-gray-800">
-                                    <td colspan="3" class="px-4 py-3 text-right">Total:</td>
-                                    <td class="px-4 py-3">@Model.TotalPrice.ToString("C2", new CultureInfo("en-US"))</td>
+                                    <td colspan="3" class="px-4 py-3">@SharedLocalizer["Total"]:</td>
+                                    <td class="px-4 py-3">@Model.TotalPrice.ToString("C2", new CultureInfo(isArabic ? "ar-EG" : "en-US"))</td>
                                 </tr>
                             </tfoot>
                         </table>
                     </div>
                 }
             </div>
-            <div class="card-footer p-6 bg-gray-50 rounded-b-3xl text-right">
+
+            <div class="card-footer p-6 bg-gray-50 rounded-b-3xl">
                 @if (Model != null && Model.Items != null && Model.Items.Any())
                 {
                     @if (Model.Status == "Pending")
                     {
-                        <form asp-action="ConfirmOrder" method="post" class="d-inline">
-                            <button type="submit" class="btn bg-green-600 text-white py-2 px-6 rounded-full hover:bg-green-700 mr-2">
-                                <i class="fas fa-check mr-2"></i> Confirm Order
-                            </button>
-                        </form>
-                        <form asp-action="CancelOrder" method="post" class="d-inline">
-                            <button type="submit" class="btn bg-red-600 text-white py-2 px-6 rounded-full hover:bg-red-700">
-                                <i class="fas fa-times mr-2"></i> Cancel Order
-                            </button>
-                        </form>
+                        <div class="space-y-4">
+                            <form asp-action="SaveOrderNotes" method="post" class="space-y-3">
+                                <input type="hidden" name="Id" value="@Model.Id" />
+                                <div>
+                                    <label for="Notes" class="block text-sm font-medium text-gray-700 mb-1">
+                                        @SharedLocalizer["AddNoteToOrder"]
+                                    </label>
+                                    <textarea id="Notes" name="Notes" rows="3"
+                                      class="w-full rounded-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                                      placeholder="@SharedLocalizer["SpecialInstructions"]">@Model.Notes</textarea>
+                                </div>
+                                <div class="flex @(isArabic ? "justify-start" : "justify-end")">
+                                    <button type="submit" class="btn bg-blue-600 text-white py-2 px-6 rounded-full hover:bg-blue-700">
+                                        <i class="fas fa-save mr-2"></i> @SharedLocalizer["SaveNote"]
+                                    </button>
+                                </div>
+                            </form>
+
+                            <div class="flex items-center @(isArabic ? "justify-start" : "justify-end") gap-3">
+                                <form asp-action="ConfirmOrder" method="post">
+                                    <input type="hidden" name="Id" value="@Model.Id" />
+                                    <button type="submit" class="btn bg-green-600 text-white py-2 px-6 rounded-full hover:bg-green-700">
+                                        <i class="fas fa-check mr-2"></i> @SharedLocalizer["ConfirmOrder"]
+                                    </button>
+                                </form>
+                                <form asp-action="CancelOrder" method="post">
+                                    <button type="submit" class="btn bg-red-600 text-white py-2 px-6 rounded-full hover:bg-red-700">
+                                        <i class="fas fa-times mr-2"></i> @SharedLocalizer["CancelOrder"]
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     }
                     else
                     {
                         <span class="text-green-600 font-medium">
-                            <i class="fas fa-check-circle mr-2"></i> Order has been processed.
+                            <i class="fas fa-check-circle mr-2"></i> @SharedLocalizer["OrderProcessed"]
                         </span>
                     }
                 }
             </div>
         </div>
+
         <div class="mt-8 text-center">
             <a asp-action="ShowAllProducts" asp-controller="Product" class="text-indigo-600 hover:text-indigo-800 font-medium">
-                <i class="fas fa-store mr-2"></i> Continue Shopping
+                <i class="fas fa-store mr-2"></i> @SharedLocalizer["ContinueShopping"]
             </a>
         </div>
     </div>
-</body>
-</html>
+</div>

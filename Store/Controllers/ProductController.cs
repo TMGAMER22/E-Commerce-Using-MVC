@@ -133,7 +133,7 @@ namespace Store.Controllers
                 return Forbid();
 
             productRepository.Delete(product.Id);
-            productRepository.Save();
+            await productRepository.Save();
             return RedirectToAction("ShowUserProducts");
         }
 

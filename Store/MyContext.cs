@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Store.Chat.Models;
 using Store.Models;
 using System.Reflection.Emit;
 
@@ -14,6 +15,10 @@ namespace Store
         public DbSet<CartItem> cartItems { get; set; }
         public DbSet <Order> orders { get; set; }
         public DbSet<OrderItems> ordersItems { get; set; }
+        public DbSet<Conversation> Conversations { get; set; }
+        public DbSet<Message> Messages { get; set; }
+
+
         public MyContext(DbContextOptions options) : base(options)
         {
         }
@@ -62,6 +67,11 @@ namespace Store
                     {
                         Id = Guid.Parse("44444444-4444-4444-4444-444444444444"),
                         Name = "SeaFood"
+                    },
+                    new Category
+                    {
+                        Id = Guid.Parse("55555555-5555-5555-5555-555555555555"),
+                        Name = "Figures"
                     }
                 );
 
@@ -76,6 +86,24 @@ namespace Store
             builder.Entity<Product>()
                 .Property(p => p.Price)
                 .HasColumnType("decimal(18,2)");
+
+            builder.Entity<Conversation>()
+                .HasOne(c => c.Client)
+                .WithMany()
+                .HasForeignKey(c => c.ClientId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Conversation>()
+                .HasOne(c => c.Company)
+                .WithMany()
+                .HasForeignKey(c => c.CompanyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Message>()
+                .HasOne(m => m.Sender)
+                .WithMany()
+                .HasForeignKey(m => m.SenderId)
+                .OnDelete(DeleteBehavior.Restrict);
 
         }
     }

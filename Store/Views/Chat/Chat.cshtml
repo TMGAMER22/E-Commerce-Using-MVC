@@ -1,0 +1,203 @@
+﻿@* @using Store.Chat.Models
+@model Conversation
+@{
+    ViewData["Title"] = "Chat";
+    Layout = "_Layout";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f1f1f1;
+        }
+
+        .chat-container {
+            max-width: 450px;
+            margin: 30px auto;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #fff;
+        }
+
+        .chat-header {
+            background: #1da1f2;
+            color: white;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+            .chat-header .users {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .chat-header img {
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+            }
+
+        .chat-messages {
+            padding: 15px;
+            height: 400px;
+            overflow-y: auto;
+            background: #f9f9f9;
+        }
+
+        .message {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin: 8px 0;
+            clear: both;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .bot-message {
+            background: #e9ecef;
+            float: left;
+            text-align: left;
+            margin-right: auto;
+        }
+
+        .user-message {
+            background: #1da1f2;
+            color: white;
+            float: right;
+            text-align: right;
+            margin-left: auto;
+        }
+
+        .timestamp {
+            font-size: 10px;
+            color: gray;
+            display: block;
+            margin-top: 3px;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 10px;
+            background: #fff;
+            border-top: 1px solid #ddd;
+        }
+
+            .chat-input input {
+                flex: 1;
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+
+            .chat-input button {
+                padding: 10px 15px;
+                margin-left: 10px;
+                background: #1da1f2;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+
+                .chat-input button:hover {
+                    background: #0d8ddb;
+                }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <!-- الهيدر -->
+        <div class="chat-header">
+            <div class="users">
+                <span>@Model.Client?.UserName</span>
+                <span>@Model.Company?.UserName</span>
+            </div>
+        </div>
+
+        <!-- الرسائل القديمة -->
+        <div class="chat-messages" id="chatMessages">
+            @foreach (var msg in Model.Messages.OrderBy(m => m.SendAt))
+            {
+                <div class="message @(msg.SenderId == User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ? "user-message" : "bot-message")">
+                    <p>@msg.MessageText</p>
+                    <span class="timestamp">@msg.SendAt.ToString("HH:mm")</span>
+                </div>
+            }
+        </div>
+
+        <!-- الانبوت -->
+        <div class="chat-input">
+            <input type="text" id="messageInput" placeholder="Type a reply...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <!-- متغيرات مهمة -->
+    <script>
+        const conversationId = "@Model.Id";
+        const userId = "@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value";
+    </script>
+
+    <!-- مكتبة سيجنال آر -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/chatHub")
+            .build();
+
+        // استقبال الرسائل
+        connection.on("ReceiveMessage", (senderId, message) => {
+            addMessageToUI(senderId, message);
+        });
+
+        // تشغيل الكونكشن
+        connection.start().then(() => {
+            connection.invoke("JoinConversation", conversationId);
+        });
+
+        // إرسال الرسالة
+        function sendMessage() {
+            const input = document.getElementById("messageInput");
+            const message = input.value.trim();
+            if (message) {
+                connection.invoke("SendMessage", conversationId, userId, message);
+                input.value = "";
+            }
+        }
+
+        // إضافة الرسالة لواجهة المستخدم
+        function addMessageToUI(senderId, message) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const newMessage = document.createElement('div');
+            newMessage.className = senderId === userId ? 'message user-message' : 'message bot-message';
+
+            const text = document.createElement('p');
+            text.textContent = message;
+
+            const timestamp = document.createElement('span');
+            timestamp.className = 'timestamp';
+            const now = new Date();
+            timestamp.textContent = now.getHours().toString().padStart(2, '0') + ":" +
+                                    now.getMinutes().toString().padStart(2, '0');
+
+            newMessage.appendChild(text);
+            newMessage.appendChild(timestamp);
+
+            messagesDiv.appendChild(newMessage);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+    </script>
+</body>
+</html> *@

@@ -1,31 +1,16 @@
 ﻿@model Store.Models.Cart
+@using System.Globalization
 @{
     ViewData["Title"] = "ShowCart";
+    Layout = "_Layout";
+    var isArabic = System.Threading.Thread.CurrentThread.CurrentUICulture.Name.StartsWith("ar");
 }
-@using System.Globalization
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Shopping Cart</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-</head>
-<body class="bg-indigo-50 min-h-screen font-sans">
+<div class="bg-indigo-50 min-h-screen font-sans" dir="@(isArabic ? "rtl" : "ltr")">
     <!-- Header -->
     <header class="bg-gradient-to-r from-purple-600 to-pink-600 py-6">
         <div class="container mx-auto px-4 flex justify-between items-center">
-            <h1 class="text-3xl font-extrabold text-white">Your Shopping Cart</h1>
-            <div class="flex items-center space-x-4">
-                <a asp-action="ShowAllProducts" asp-controller="Product" class="text-white hover:text-gray-200 font-medium">
-                    <i class="fas fa-store mr-1"></i> Continue Shopping
-                </a>
-                <a asp-action="Details" asp-controller="Account" class="text-white hover:text-gray-200 font-medium">
-                    <i class="fas fa-user mr-1"></i> Profile
-                </a>
-            </div>
+            <h1 class="text-3xl font-extrabold text-white">@SharedLocalizer["YourShoppingCart"]</h1>
         </div>
     </header>
 
@@ -34,21 +19,38 @@
         @if (Model == null || !Model.Items.Any())
         {
             <div class="bg-white rounded-2xl shadow-lg p-8 text-center">
-                <p class="text-gray-600 text-lg font-medium">Your cart is empty.</p>
-                <a asp-action="ShowAllProducts" asp-controller="Product" class="mt-4 inline-block bg-indigo-600 text-white py-2 px-6 rounded-lg hover:bg-indigo-700 transition duration-300">Shop Now</a>
+                <p class="text-gray-600 text-lg font-medium">@SharedLocalizer["YourCartIsEmpty"]</p>
+                <a asp-action="ShowAllProducts" asp-controller="Product"
+                   class="mt-4 inline-block bg-indigo-600 text-white py-2 px-6 rounded-lg hover:bg-indigo-700 transition duration-300">
+                    @SharedLocalizer["ShopNow"]
+                </a>
+                <a asp-action="MyOrder" asp-controller="Order"
+                   class="mt-4 inline-block bg-indigo-600 text-white py-2 px-6 rounded-lg hover:bg-indigo-700 transition duration-300">
+                    @SharedLocalizer["GoToOrder"]
+                </a>
             </div>
         }
         else
         {
+            <form asp-action="ShowAllProducts" asp-controller="Product" method="post">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="bg-indigo-600 text-white py-2 px-6 rounded-lg hover:bg-indigo-700 transition duration-300">
+                    <i class="fas fa-check-circle mr-2"></i> @SharedLocalizer["ContinueShopping"]
+                </button>
+            </form>
             <div class="bg-white rounded-2xl shadow-lg p-6">
                 <div class="grid grid-cols-1 gap-4">
                     @foreach (var item in Model.Items)
                     {
                         <div class="flex items-center border-b border-gray-200 py-4">
-                            <img src="@(item.Product?.ImagePath ?? "https://via.placeholder.com/100")" alt="@(item.Product?.Name ?? "Product")" class="w-20 h-20 object-cover rounded-lg mr-4">
+                            <img src="@(item.Product?.ImagePath ?? "https://via.placeholder.com/100")"
+                                 alt="@(item.Product?.Name ?? "Product")"
+                                 class="w-20 h-20 object-cover rounded-lg mr-4">
                             <div class="flex-1">
                                 <h3 class="text-lg font-semibold text-gray-900">@(item.Product?.Name ?? "Unnamed Product")</h3>
-                                <p class="text-gray-600">Price: @((item.Product?.Price ?? 0).ToString("C2", new CultureInfo("en-US")))</p>
+                                <p class="text-gray-600">
+                                    @SharedLocalizer["Price"]: @((item.Product?.Price ?? 0).ToString("C2", new CultureInfo("en-US")))
+                                </p>
 
                                 <!-- الكمية + أزرار زيادة/نقصان -->
                                 <div class="flex items-center space-x-2 mt-2">
@@ -73,9 +75,10 @@
                                     </form>
                                 </div>
 
-                                <p class="text-indigo-600 font-medium mt-2">Total: @(((item.Product?.Price ?? 0) * item.Quantity).ToString("C2", new CultureInfo("en-US")))</p>
+                                <p class="text-indigo-600 font-medium mt-2">
+                                    @SharedLocalizer["Total"]: @(((item.Product?.Price ?? 0) * item.Quantity).ToString("C2", new CultureInfo("en-US")))
+                                </p>
                             </div>
-
                         </div>
                     }
                 </div>
@@ -83,23 +86,27 @@
                 <!-- القسم بتاع الإجمالي + الأزرار -->
                 <div class="mt-6 flex justify-between items-center">
                     <p class="text-xl font-bold text-gray-900">
-                        Total: @(Model.Items.Sum(i => (i.Product?.Price ?? 0) * i.Quantity).ToString("C2", new CultureInfo("en-US")))
+                        @SharedLocalizer["Total"]: @(Model.Items.Sum(i => (i.Product?.Price ?? 0) * i.Quantity).ToString("C2", new CultureInfo("en-US")))
                     </p>
                     <div class="flex space-x-3">
                         <!-- زرار Clear All -->
                         <form asp-action="ClearCart" method="post">
                             @Html.AntiForgeryToken()
                             <button type="submit" class="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition duration-300">
-                                <i class="fas fa-trash mr-1"></i> Clear All
+                                <i class="fas fa-trash mr-1"></i> @SharedLocalizer["ClearAll"]
                             </button>
                         </form>
                         <!-- زرار Checkout -->
                         <form asp-action="Checkout" asp-controller="Order" method="post">
                             @Html.AntiForgeryToken()
                             <button type="submit" class="bg-indigo-600 text-white py-2 px-6 rounded-lg hover:bg-indigo-700 transition duration-300">
-                                <i class="fas fa-check-circle mr-2"></i> Proceed to Checkout
+                                <i class="fas fa-check-circle mr-2"></i> @SharedLocalizer["ProceedToCheckout"]
                             </button>
                         </form>
+
+                        <a asp-controller="Order" asp-action="MyOrder" class="btn btn-primary">
+                            <i class="fas fa-shopping-cart"></i> @SharedLocalizer["GoToOrder"]
+                        </a>
                     </div>
                 </div>
             </div>
@@ -107,7 +114,5 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-indigo-900 text-white py-4 mt-8">
-    </footer>
-</body>
-</html>
+    <footer class="bg-indigo-900 text-white py-4 mt-8"></footer>
+</div>

@@ -3,7 +3,7 @@
 @inject IStringLocalizer<SharedResource> SharedLocalizer
 
 <!DOCTYPE html>
-<html lang="@System.Threading.Thread.CurrentThread.CurrentCulture.Name">
+<html lang="@System.Threading.Thread.CurrentThread.CurrentCulture.Name" dir="@(System.Threading.Thread.CurrentThread.CurrentCulture.Name == "ar-EG" ? "rtl" : "ltr")">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -18,72 +18,129 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col">
+<body class="bg-gray-50 min-h-screen flex flex-col">
 
     <!-- Navbar -->
     <header>
-        <nav class="bg-white shadow-sm border-b">
-            <div class="container mx-auto px-4 flex justify-between items-center h-16">
-                <!-- Logo -->
-                <a asp-controller="Home" asp-action="Index"
-                   class="text-xl font-bold text-blue-600 flex items-center gap-2">
-                    🛒 Store
-                </a>
-
-                <!-- Links -->
-                <div class="flex items-center space-x-6">
-                    <a asp-controller="Home" asp-action="Index" class="text-gray-700 hover:text-blue-600 transition">
-                        @SharedLocalizer["Home"]
+        <nav class="bg-white/90 backdrop-blur border-b sticky top-0 z-40">
+            <div class="container mx-auto px-4">
+                <div class="flex items-center justify-between h-16">
+                    <!-- Left: Brand -->
+                    <a asp-controller="Home" asp-action="Index" class="flex items-center gap-2 text-2xl font-extrabold text-blue-600">
+                        🛒 <span>VStore</span>
                     </a>
 
-                    @if (User.Identity.IsAuthenticated)
-                    {
-                        <a asp-controller="Account" asp-action="Details" class="text-gray-700 hover:text-blue-600 transition">
-                            @SharedLocalizer["Details"]
+                    <!-- Mobile toggle -->
+                    <button id="nav-toggle" class="md:hidden inline-flex items-center justify-center p-2 rounded border text-gray-700 hover:bg-gray-100" aria-label="Toggle navigation" aria-expanded="false">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    </button>
+
+                    <!-- Right: Desktop menu -->
+                    <div class="hidden md:flex items-center gap-6">
+                        <a asp-controller="Home" asp-action="Index" class="text-gray-700 hover:text-blue-600 transition">
+                            @SharedLocalizer["Home"]
                         </a>
 
-                        @if (User.IsInRole("Company"))
+                        @if (User?.Identity?.IsAuthenticated == true)
                         {
-                            <a asp-controller="Product" asp-action="ShowUserProducts" class="text-gray-700 hover:text-blue-600 transition">
-                                @SharedLocalizer["Products"]
+                            <a asp-controller="Account" asp-action="Details" class="text-gray-700 hover:text-blue-600 transition">
+                                @SharedLocalizer["Details"]
                             </a>
-                            <a asp-controller="Product" asp-action="AddProduct" class="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 transition">
-                                + @SharedLocalizer["AddProduct"]
-                            </a>
+
+                            @if (User.IsInRole("Company"))
+                            {
+                                <a asp-controller="Product" asp-action="ShowUserProducts" class="text-gray-700 hover:text-blue-600 transition">
+                                    @SharedLocalizer["Products"]
+                                </a>
+                                <a asp-controller="Product" asp-action="AddProduct" class="bg-green-500 text-white px-3 py-1.5 rounded-lg hover:bg-green-600 transition">
+                                    + @SharedLocalizer["AddProduct"]
+                                </a>
+                                @* <a asp-controller="Chat" asp-action="Index" class="text-gray-700 hover:text-blue-600 transition">
+                                    @SharedLocalizer["Chat"]
+                                </a> *@
+                            }
+                            else if (User.IsInRole("Customer"))
+                            {
+                                <a asp-controller="Product" asp-action="ShowAllProducts" class="text-gray-700 hover:text-blue-600 transition">
+                                    @SharedLocalizer["Products"]
+                                </a>
+                            }
                         }
-                        else if (User.IsInRole("Customer"))
+
+                        <!-- Language Dropdown -->
+                        <div class="relative">
+                            <button id="lang-btn" class="flex items-center gap-2 px-3 py-1.5 border rounded-lg bg-white hover:bg-gray-50">
+                                @{
+                                    var cur = System.Threading.Thread.CurrentThread.CurrentCulture.Name;
+                                }
+                                @if (cur == "ar-EG")
+                                {
+                                    <span>العربية</span>
+                                }
+                                else
+                                {
+                                    <span>English</span>
+                                }
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+
+                            <div id="lang-menu" class="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg hidden overflow-hidden">
+                                <a href="@Url.Action("SetLanguage", "Home", new { culture = "en-US", returnUrl = Context.Request.Path + Context.Request.QueryString })" class="block px-4 py-2 hover:bg-gray-100">@SharedLocalizer["English"]</a>
+                                <a href="@Url.Action("SetLanguage", "Home", new { culture = "ar-EG", returnUrl = Context.Request.Path + Context.Request.QueryString })" class="block px-4 py-2 hover:bg-gray-100">@SharedLocalizer["Arabic"]</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile menu -->
+                <div id="nav-menu" class="md:hidden hidden border-t py-3">
+                    <div class="flex flex-col gap-3">
+                        <a asp-controller="Home" asp-action="Index" class="px-1 text-gray-700 hover:text-blue-600 transition">
+                            @SharedLocalizer["Home"]
+                        </a>
+
+                        @if (User?.Identity?.IsAuthenticated == true)
                         {
-                            <a asp-controller="Product" asp-action="ShowAllProducts" class="text-gray-700 hover:text-blue-600 transition">
-                                @SharedLocalizer["Products"]
+                            <a asp-controller="Account" asp-action="Details" class="px-1 text-gray-700 hover:text-blue-600 transition">
+                                @SharedLocalizer["Details"]
                             </a>
+
+                            @if (User.IsInRole("Company"))
+                            {
+                                <a asp-controller="Product" asp-action="ShowUserProducts" class="px-1 text-gray-700 hover:text-blue-600 transition">
+                                    @SharedLocalizer["Products"]
+                                </a>
+                                <a asp-controller="Product" asp-action="AddProduct" class="inline-block w-fit bg-green-500 text-white px-3 py-1.5 rounded-lg hover:bg-green-600 transition">
+                                    + @SharedLocalizer["AddProduct"]
+                                </a>
+                            }
+                            else if (User.IsInRole("Customer"))
+                            {
+                                <a asp-controller="Product" asp-action="ShowAllProducts" class="px-1 text-gray-700 hover:text-blue-600 transition">
+                                    @SharedLocalizer["Products"]
+                                </a>
+                                <a asp-controller="Cart" asp-action="ShowCart" class="px-1 text-gray-700 hover:text-blue-600 transition">
+                                    @SharedLocalizer["Cart"]
+                                </a>
+                            }
                         }
-                    }
 
-                    <!-- Language Dropdown -->
-                    <div class="relative">
-                        <button id="lang-btn" class="flex items-center px-3 py-1 border rounded bg-white">
-                            @{
-                                var cur = System.Threading.Thread.CurrentThread.CurrentCulture.Name;
-                            }
-                            @if (cur == "ar-EG")
-                            {
-                                <span class="me-2">العربية</span>
-                            }
-                            else
-                            {
-                                <span class="me-2">English</span>
-                            }
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </button>
-
-                        <div id="lang-menu" class="absolute right-0 mt-2 bg-white border rounded shadow hidden">
-                            <a href="@Url.Action("SetLanguage", "Home", new { culture = "en-US", returnUrl = Context.Request.Path + Context.Request.QueryString })"
-                               class="block px-4 py-2 hover:bg-gray-100">English</a>
-                            <a href="@Url.Action("SetLanguage", "Home", new { culture = "ar-EG", returnUrl = Context.Request.Path + Context.Request.QueryString })"
-                               class="block px-4 py-2 hover:bg-gray-100">العربية</a>
+                        <!-- Language (mobile) -->
+                        <div class="pt-2">
+                            <div class="relative inline-block">
+                                <button id="lang-btn-mobile" class="flex items-center gap-2 px-3 py-1.5 border rounded-lg bg-white hover:bg-gray-50">
+                                    @if (System.Threading.Thread.CurrentThread.CurrentCulture.Name == "ar-EG") { <span>العربية</span>; } else { <span>English</span>; }
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+                                <div id="lang-menu-mobile" class="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg hidden overflow-hidden">
+                                    <a href="@Url.Action("SetLanguage", "Home", new { culture = "en-US", returnUrl = Context.Request.Path + Context.Request.QueryString })" class="block px-4 py-2 hover:bg-gray-100">@SharedLocalizer["English"]</a>
+                                    <a href="@Url.Action("SetLanguage", "Home", new { culture = "ar-EG", returnUrl = Context.Request.Path + Context.Request.QueryString })" class="block px-4 py-2 hover:bg-gray-100">@SharedLocalizer["Arabic"]</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -93,25 +150,54 @@
 
 
     <!-- Main Content -->
-    <main class="flex-grow container py-4">
+    <main class="flex-grow container mx-auto px-4 py-6">
         @RenderBody()
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t shadow text-center py-3 text-gray-600 text-sm">
-        &copy; @DateTime.Now.Year - Store
+    <footer class="bg-white border-t text-center py-3 text-gray-600 text-sm">
+      
     </footer>
 
     <!-- Scripts -->
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const btn = document.getElementById("lang-btn");
-        const menu = document.getElementById("lang-menu");
-        btn.addEventListener("click", () => menu.classList.toggle("hidden"));
-        document.addEventListener("click", e => {
-            if (!btn.contains(e.target) && !menu.contains(e.target))
-                menu.classList.add("hidden")
-        });
+        // Language dropdown (desktop)
+        const langBtn = document.getElementById("lang-btn");
+        const langMenu = document.getElementById("lang-menu");
+        if (langBtn && langMenu) {
+            langBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                langMenu.classList.toggle("hidden");
+            });
+            document.addEventListener("click", (e) => {
+                if (!langMenu.contains(e.target)) langMenu.classList.add("hidden");
+            });
+        }
+
+        // Language dropdown (mobile)
+        const langBtnMobile = document.getElementById("lang-btn-mobile");
+        const langMenuMobile = document.getElementById("lang-menu-mobile");
+        if (langBtnMobile && langMenuMobile) {
+            langBtnMobile.addEventListener("click", (e) => {
+                e.stopPropagation();
+                langMenuMobile.classList.toggle("hidden");
+            });
+            document.addEventListener("click", (e) => {
+                if (!langMenuMobile.contains(e.target)) langMenuMobile.classList.add("hidden");
+            });
+        }
+
+        // Mobile nav toggle
+        const navToggle = document.getElementById("nav-toggle");
+        const navMenu = document.getElementById("nav-menu");
+        if (navToggle && navMenu) {
+            navToggle.addEventListener("click", () => {
+                const expanded = navToggle.getAttribute("aria-expanded") === "true";
+                navToggle.setAttribute("aria-expanded", (!expanded).toString());
+                navMenu.classList.toggle("hidden");
+            });
+        }
     </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

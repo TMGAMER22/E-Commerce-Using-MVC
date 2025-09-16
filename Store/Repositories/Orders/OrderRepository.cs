@@ -16,6 +16,38 @@ namespace Store.Repositories.Orders
         }
 
 
+        public async Task<Order?> GetLatestPendingOrderAsync(string userId)
+        {
+            return await context.orders
+                .Where(o => o.UserId == userId && o.Status == "Pending")
+                .OrderByDescending(o => o.CreatedAt)
+                .Include(o => o.Items)
+                .ThenInclude(i => i.Product)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<Order> GetOrCreatePendingOrderAsync(string userId)
+        {
+            var order = await GetLatestPendingOrderAsync(userId);
+
+            if (order == null)
+            {
+                // إنشاء طلب جديد إذا لم يوجد طلب معلق
+                order = new Order
+                {
+                    UserId = userId,
+                    Status = "Pending",
+                    CreatedAt = DateTime.Now,
+                    TotalPrice = 0,
+                    Items = new List<OrderItems>()
+                };
+
+                await context.orders.AddAsync(order);
+                await context.SaveChangesAsync();
+            }
+
+            return order;
+        }
         public async Task<Order> FillOrderFromCartAsync(string userId)
         {
             var userCart = await context.carts
@@ -101,6 +133,15 @@ namespace Store.Repositories.Orders
 
             context.orders.Remove(order);
 
+            await context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> UpdateOrderNotesAsync(Guid orderId, string? notes)
+        {
+            var order = await context.orders.FirstOrDefaultAsync(o => o.Id == orderId);
+            if (order == null) return false;
+            order.Notes = notes;
             await context.SaveChangesAsync();
             return true;
         }

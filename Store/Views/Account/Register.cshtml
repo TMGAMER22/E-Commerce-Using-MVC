@@ -1,17 +1,10 @@
 ﻿@model Store.ViewModel.Account.RegisterViewModel
 @{
     ViewData["Title"] = "Register";
+    Layout = "_Layout";
 }
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registration Page</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 flex items-center justify-center h-screen">
+<div class="flex items-center justify-center min-h-[calc(100vh-200px)]">
     <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">@SharedLocalizer["CreateAccount"]</h2>
 
@@ -41,13 +34,13 @@
 
             <!-- Role Dropdown -->
             <div class="mb-4" id="Rol">
-                @Html.DropDownListFor(m => m.Role, ViewData["Role"] as List<SelectListItem>, "Select Role", new { @class = "w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"  })
+                @Html.DropDownListFor(m => m.Role, ViewData["Role"] as List<SelectListItem>, @SharedLocalizer["SelectRole"], new { @class = "w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"  })
                 <span asp-validation-for="Role" class="text-red-500 text-sm"></span>
             </div>
 
             <!-- Category Dropdown -->
             <div class="mb-6" id="Cat" style="display:none">
-                @Html.DropDownListFor(m => m.CategoryId, ViewData["Category"] as List<SelectListItem>, "Select Category", new { @class = "w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" })
+                @Html.DropDownListFor(m => m.CategoryId, ViewData["Category"] as List<SelectListItem>, @SharedLocalizer["SelectCategory"], new { @class = "w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" })
                 <span asp-validation-for="CategoryId" class="text-red-500 text-sm"></span>
             </div>
 
@@ -62,12 +55,8 @@
         </div>
 
     </div>
+</div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate-unobtrusive/3.2.13/jquery.validate.unobtrusive.min.js"></script>
-</body>
-</html>
 <script>
     let Cat = document.getElementById("Cat");
     let Rol = document.getElementById("Rol").querySelector("select");

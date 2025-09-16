@@ -3,47 +3,40 @@
     ViewData["Title"] = "Details";
     Layout = "_Layout";
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Profile</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 flex items-center justify-center h-screen">
+
+<div class="flex items-center justify-center min-h-[calc(100vh-200px)]">
     <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Edit Profile</h2>
+        <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">@SharedLocalizer["EditProfile"]</h2>
 
         <form asp-action="SaveChanges" method="post">
             <div asp-validation-summary="All" class="text-red-500 text-sm mb-4"></div>
             <div class="space-y-4">
                 <div>
-                    <label asp-for="Name" class="block text-gray-700 font-medium mb-1"></label>
+                    <label asp-for="Name" class="block text-gray-700 font-medium mb-1">@SharedLocalizer["Name"]</label>
                     <input id="NameInput" asp-for="Name" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required />
                     <span asp-validation-for="Name" class="text-red-500 text-sm"></span>
                 </div>
             <div class="mt-6 text-center space-x-2">
-                <button id="savebutton" type="submit" class="inline-block bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition duration-200" style="display:none">Save Changes</button>
-                    <button asp-controller="Account" asp-action="SignOut" type="submit" class="inline-block bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition duration-200">Log Out</button>
-                    <button asp-controller="Account" asp-action="Delete" type="submit" class="inline-block bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition duration-200"> Delete Account </button>
-                <a asp-action="EditPassword" class="inline-block bg-gray-500 text-white p-2 rounded-lg hover:bg-gray-600 transition duration-200">Edit Password</a>
+                <button id="savebutton" type="submit" class="inline-block bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition duration-200" style="display:none">@SharedLocalizer["SaveChanges"]</button>
+                    <button asp-controller="Account" asp-action="SignOut" type="submit" class="inline-block bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition duration-200">@SharedLocalizer["LogOut"]</button>
+                    <button asp-controller="Account" asp-action="Delete" type="submit" class="inline-block bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition duration-200">@SharedLocalizer["DeleteAccount"]</button>
+                <a asp-action="EditPassword" class="inline-block bg-gray-500 text-white p-2 rounded-lg hover:bg-gray-600 transition duration-200">@SharedLocalizer["EditPassword"]</a>
             </div>
         </form>
         @if(User.IsInRole("Customer")){
         <div class="mt-4 text-center">
-            <a asp-action="ShowAllProducts" asp-controller="Product" class="text-blue-500 hover:underline font-medium">Back to Home</a>
+            <a asp-action="ShowAllProducts" asp-controller="Product" class="text-blue-500 hover:underline font-medium">@SharedLocalizer["BackToHome"]</a>
             </div>
         }
         else
         {
             <div class="mt-4 text-center">
-                <a asp-action="ShowUserProducts" asp-controller="Product" class="text-blue-500 hover:underline font-medium">Back to Home</a>
+                <a asp-action="ShowUserProducts" asp-controller="Product" class="text-blue-500 hover:underline font-medium">@SharedLocalizer["BackToHome"]</a>
             </div>
         }
     </div>
-</body>
-</html>
+</div>
+
 <script>
     let Name= document.getElementById("NameInput");
     let Save = document.getElementById("savebutton");

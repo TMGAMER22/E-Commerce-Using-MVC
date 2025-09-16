@@ -1,8 +1,23 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Welcome";
+    Layout = "_Layout";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="position-relative vh-100 text-center text-white d-flex align-items-center justify-content-center">
+    <!-- الخلفية -->
+    <div class="position-absolute top-0 start-0 w-100 h-100 bg-dark">
+        <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30"
+             class="w-100 h-100 object-fit-cover opacity-50"
+             alt="خلفية المتجر">
+    </div>
+
+    <!-- المحتوى -->
+    <div class="position-relative p-5 rounded bg-dark bg-opacity-50 shadow-lg">
+        <h1 class="display-4 fw-bold mb-3">أهلا بيك في المتجر</h1>
+        <p class="lead mb-4">اكتشف أفضل المنتجات بأفضل الأسعار</p>
+        <a asp-controller="Product" asp-action="ShowAllProducts"
+           class="btn btn-success btn-lg px-5">
+            ابدأ التسوق
+        </a>
+    </div>
 </div>

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
+using Store.Chat;
 using Store.Language;
 using Store.Models;
 using Store.Repositories.Carts;
@@ -26,6 +27,8 @@ namespace Store
                     options.DataAnnotationLocalizerProvider = (type, factory) =>
                         factory.Create(typeof(SharedResource));
                 });
+
+            builder.Services.AddSignalR();
 
 
             builder.Services.AddDbContext<MyContext>(options =>
@@ -80,9 +83,11 @@ namespace Store
             app.UseAuthentication();
             app.UseAuthorization();
 
+            //app.MapHub<ChatHub>("/chatHub");
             app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+             name: "default",
+             pattern: "{controller=Home}/{action=Index}/{id?}");
+
 
             app.Run();
         }

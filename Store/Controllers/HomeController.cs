@@ -18,7 +18,15 @@ namespace Store.Controllers
         {
             if (User.Identity.IsAuthenticated)
             {
-                return View();
+                if (User.IsInRole("Company"))
+                {
+                    return RedirectToAction("ShowUserProducts", "Product");
+                }
+                else
+                {
+                    return View();
+                }
+
             }
             else
             {
